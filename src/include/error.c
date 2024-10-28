@@ -6,7 +6,7 @@ char *error_message(Error error)
   switch (error)
   {
   case ERROR_SUCCESS:
-    return "Nenhum error identificado";
+    return "Nenhum erro identificado";
     break;
   case ERROR_MALLOC:
     return "Erro: não foi possível alocar memória";

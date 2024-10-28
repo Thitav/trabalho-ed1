@@ -96,10 +96,9 @@ void products_bid(ProductList *products, UserList *users)
   user_name[strcspn(user_name, "\n")] = 0;
 
   printf("\tEntre com o valor do lance: R$ ");
-  if (scanf(" %f%*c", &value) != 1)
+  while (scanf(" %f%*c", &value) != 1)
   {
     fputs(error_message(ERROR_INPUT), stderr);
-    return;
   }
 
   printf("\tEntre com o nome do produto: ");
@@ -307,11 +306,17 @@ int main()
     unsigned char opt;
 
     puts("\nO que deseja fazer?");
+
     printf("Resposta: ");
-    if (scanf(" %hhu%*c", &opt) != 1)
+    while (scanf(" %hhu%*c", &opt) != 1)
     {
       fputs(error_message(ERROR_INPUT), stderr);
-      continue;
+      if (scanf("%*[^\n]") == EOF)
+      {
+        fputs(error_message(ERROR_INPUT), stderr);
+        break;
+      }
+      printf("\nResposta: ");
     }
 
     switch (opt)

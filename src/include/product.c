@@ -44,7 +44,7 @@ bool product_bid_add(Product *product, User *user, float value, Error *error)
     bid_user_add(bid, user, error);
     if (*error != ERROR_SUCCESS)
     {
-      stack_pop(&product->bids);
+      block_free(stack_pop(&product->bids));
       return false;
     }
 
@@ -52,7 +52,7 @@ bool product_bid_add(Product *product, User *user, float value, Error *error)
     if (*error != ERROR_SUCCESS)
     {
       bid_user_remove(bid, user);
-      stack_pop(&product->bids);
+      block_free(stack_pop(&product->bids));
       return false;
     }
 

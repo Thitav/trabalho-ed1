@@ -277,14 +277,3 @@ void list_clear(List *list)
   list->tail = NULL;
   list->len = 0;
 }
-
-void list_log(List *list)
-{
-  ListBlock *list_block = list->head;
-  while (list_block != NULL)
-  {
-    printf("%s -> ", list_block->block->data);
-    list_block = list_block->next;
-  }
-  putchar('\n');
-}

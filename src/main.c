@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Cadastra um produto
 void products_add(ProductList *products)
 {
   Error error;
@@ -42,6 +43,7 @@ void products_add(ProductList *products)
   description = string_from(buff, &error);
   if (error != ERROR_SUCCESS)
   {
+    string_free(name);
     fputs(error_message(error), stderr);
     return;
   }
@@ -50,6 +52,9 @@ void products_add(ProductList *products)
   product_list_push(products, &product, &error);
   if (error != ERROR_SUCCESS)
   {
+    string_free(name);
+    string_free(description);
+    product_clear(&product);
     fputs(error_message(error), stderr);
     return;
   }
@@ -57,6 +62,7 @@ void products_add(ProductList *products)
   puts("Produto cadastrado com sucesso!");
 }
 
+// Remove um produto
 void products_remove(ProductList *products)
 {
   char name[BASE_STRING_SIZE] = {0};
@@ -80,12 +86,13 @@ void products_remove(ProductList *products)
   puts("Produto removido com sucesso!");
 }
 
+// Dá um lance em um produto
 void products_bid(ProductList *products, UserList *users)
 {
   Error error;
   char user_name[BASE_STRING_SIZE] = {0};
-  float value;
   char product_name[BASE_STRING_SIZE] = {0};
+  float value;
 
   printf("\tEntre com seu nome: ");
   if (fgets(user_name, sizeof(user_name), stdin) == NULL)
@@ -99,6 +106,12 @@ void products_bid(ProductList *products, UserList *users)
   while (scanf(" %f%*c", &value) != 1)
   {
     fputs(error_message(ERROR_INPUT), stderr);
+    if (scanf("%*[^\n]") == EOF)
+    {
+      fputs(error_message(ERROR_INPUT), stderr);
+      break;
+    }
+    printf("\tEntre com o valor do lance: R$ ");
   }
 
   printf("\tEntre com o nome do produto: ");
@@ -133,6 +146,7 @@ void products_bid(ProductList *products, UserList *users)
     user = user_list_push(users, &new_user, &error);
     if (error != ERROR_SUCCESS)
     {
+      user_clear(&new_user);
       fputs(error_message(error), stderr);
       return;
     }
@@ -155,6 +169,7 @@ void products_bid(ProductList *products, UserList *users)
   }
 }
 
+// Lista produtos e lances
 void products_show(ProductList *products)
 {
   if (products->len == 0)
@@ -184,11 +199,11 @@ void products_show(ProductList *products)
       Bid *bid = product_bid_get(bid_block);
       if (bid->users.len > 1)
       {
-        printf("\t\t%u", bid->users.len);
+        printf("\t\t%lu", bid->users.len);
       }
       else
       {
-        printf("\t\t%u", bid->users.len);
+        printf("\t\t%lu", bid->users.len);
       }
       printf(" lance de R$ %.2f: ", bid->value);
 
@@ -211,6 +226,7 @@ void products_show(ProductList *products)
   puts("Listagem completa!");
 }
 
+// Lista os produtos que cada usuário não deu lance
 void users_missing_bids(UserList *users, ProductList *products)
 {
   bool missing = false;
@@ -259,6 +275,7 @@ void users_missing_bids(UserList *users, ProductList *products)
   }
 }
 
+// Encerra o leilão, mostrando o lance vencedor de cada produto
 void end_auction(ProductList *products, UserList *users)
 {
   for (ListBlock *list_block = product_list_first(products); list_block != NULL; list_block = product_list_next(list_block))
